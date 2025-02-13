@@ -69,6 +69,7 @@ public class RestAssuredImpl {
                                 .get("products");
 
         System.out.println("Hasilnya adalah " + response2.asPrettyString());
+        System.out.println("Hasilnya adalah " + response.asPrettyString());
     }
 
     public static void getSingleProduct(){
