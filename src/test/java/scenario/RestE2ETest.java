@@ -98,4 +98,32 @@ public class RestE2ETest {
         //Validation POJO
 
     }
+
+
+
+    /*
+     * Gherkin
+     * 1. Feature
+     * - Given, Then, When, And,But
+     * 
+     * 
+     * - Checkout barang
+     * Given : 
+     * - user login to apps
+     * 
+     * When :
+     * - action -> user checkout item
+     * 
+     * Then : 
+     * - result/expectation scenario
+     * - user successfully checkout
+     * 
+     * And : 
+     * simply prefix di step
+     * 
+     * 2. Stepdefenition
+     * 3. Runner
+     */
+
+     
 }
