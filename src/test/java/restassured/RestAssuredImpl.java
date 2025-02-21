@@ -13,9 +13,7 @@ public class RestAssuredImpl {
         getSingleProduct();
         searchProduct();
         addProduct();
-
         updateProduct();
-
         deleteProduct();
     }
 
