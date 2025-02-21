@@ -10,6 +10,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import apiengine.Assertion;
+import apiengine.Endpoints;
+import io.cucumber.java.Before;
+import io.cucumber.java.BeforeStep;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -30,26 +34,28 @@ public class StepDefenitionsImpl {
     DataRequest dataRequest;
     String json;
     int idProduct;
+    Endpoints endpoints;
+    Response response;
+    Assertion assertion;
+
+    @BeforeStep
+    public void setUp(){
+        endpoints = new Endpoints();
+        assertion = new Assertion();
+    }
 
     @Given("A list of products are available")
     public void getAllProducts(){
         //Implementation
-        System.out.println("getAllProducts");
-        RestAssured.baseURI = "https://dummyjson.com";
-        RequestSpecification requestSpecification = RestAssured
-                                                    .given();
+        response = endpoints.getAllProducts("products");
+        System.out.println("reponse migration" + response.asPrettyString());
 
-        Response response2 = requestSpecification
-                                .log()
-                                .all()
-                            .when()
-                                .get("products");
-        System.out.println("reponse" + response2.asPrettyString());
     }
 
     @When("I add new products to etalase")
     public void addNewProduct(){
          //Implementation
+         // Ini masih pakai metode yang lama ya.....
          System.out.println("Add new product");
          String json = "{\n" + //
                           "  \"id\": 1,\n" + //
@@ -93,7 +99,7 @@ public class StepDefenitionsImpl {
 
         Assert.assertEquals(response.statusCode(), 201);
         Assert.assertEquals(responseItem.title,"Le minerale");
-        Assert.assertEquals(responseItem.price,100001);
+        Assert.assertEquals(responseItem.price,10000);
         Assert.assertEquals(responseItem.discountPercentage, 5);
         Assert.assertEquals(responseItem.stock, 15);
         Assert.assertEquals(responseItem.category, "food");
@@ -105,17 +111,13 @@ public class StepDefenitionsImpl {
          */
         idProduct = 1;
 
+
     }
 
     @When("I add new {string} to etalase")
     public void addNewProducts(String payload) throws JsonMappingException, JsonProcessingException{
          //Implementation
         dataRequest = new DataRequest();
-
-        // System.out.println("Add new product-1" + payload);
-        RestAssured.baseURI = "https://dummyjson.com";
-        RequestSpecification requestSpecification = RestAssured
-                                                    .given();
         
         for(Map.Entry<String, String> entry : dataRequest.addItemCollection().entrySet()){
             if (entry.getKey().equals(payload)) {
@@ -123,17 +125,7 @@ public class StepDefenitionsImpl {
                 break;
             }
         }
-
-        Response response = requestSpecification
-                            .log()
-                            .all()
-                            .pathParam("path", "products")
-                            .pathParam("method", "add")
-                            .body(json)
-                            .contentType("application/json")
-                            .when()
-                                .post("{path}/{method}");
-        // System.out.println("add product" + response.asPrettyString());
+        response = endpoints.addProductData("products", "add", json);
 
         //Object mapper
         /*
@@ -147,11 +139,7 @@ public class StepDefenitionsImpl {
         responseItem = addJsonPath.getObject("", ResponseItem.class);
 
         Assert.assertEquals(response.statusCode(), 201);
-        Assert.assertEquals(responseItem.title,requestItem.title);
-        Assert.assertEquals(responseItem.price,requestItem.price);
-        Assert.assertEquals(responseItem.discountPercentage, requestItem.discountPercentage);
-        Assert.assertEquals(responseItem.stock, requestItem.stock);
-        Assert.assertEquals(responseItem.category, requestItem.category);
+        assertion.assertAddProduct(responseItem, requestItem);
 
     }
 
@@ -163,17 +151,8 @@ public class StepDefenitionsImpl {
          * 'https://dummyjson.com/products/1'
          */
 
-         RestAssured.baseURI = "https://dummyjson.com";
-         RequestSpecification requestSpecification = RestAssured
-                                                     .given();
-
-        Response response = requestSpecification
-                                .log()
-                                .all()
-                                .pathParam("idProduct", idProduct)
-                                .pathParam("path", "products")
-                            .when()
-                                .get("{path}/{idProduct}");
+        response = endpoints.getProductById("product", idProduct);
+        
         System.out.println("ini adalah response" + response.asPrettyString());
         //Validation
         //-----------------*****--------------------
@@ -190,20 +169,8 @@ public class StepDefenitionsImpl {
                 break;
             }
         }
+        response = endpoints.updateProductById("product", idProduct, json);
 
-        RestAssured.baseURI = "https://dummyjson.com";
-        RequestSpecification requestSpecification = RestAssured
-                                                    .given();
-
-        Response response = requestSpecification
-                            .log()
-                            .all()
-                            .pathParam("path", "products")
-                            .pathParam("idProduct", idProduct)
-                            .body(json)
-                            .contentType("application/json")
-                            .when()
-                                .put("{path}/{idProduct}");
         System.out.println("update product" + response.asPrettyString());
         //Validation
         //-----------------*****--------------------

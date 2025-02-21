@@ -15,7 +15,7 @@ Examples:
     |addItem2   |
 
 Scenario Outline: As a user I can update data
-    Given A list of item are available
+    Given A list of products are available
     When I add new "<payload>" to etalase
     And The product is available
     Then I can update item "<update>"
