@@ -55,6 +55,7 @@ public class StepDefenitionsImpl {
     @When("I add new products to etalase")
     public void addNewProduct(){
          //Implementation
+         // Ini masih pakai metode yang lama ya.....
          System.out.println("Add new product");
          String json = "{\n" + //
                           "  \"id\": 1,\n" + //
